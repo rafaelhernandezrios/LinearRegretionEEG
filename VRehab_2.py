@@ -1,4 +1,4 @@
-from pylsl import StreamInlet, resolve_stream
+from pylsl import StreamInlet, resolve_byprop
 import numpy as np
 import pandas as pd
 import pickle
@@ -13,7 +13,7 @@ from sklearn.metrics import accuracy_score
 arduino = serial.Serial(port='COM3', baudrate=38400, timeout=.1)
 
 print("looking for an EEG stream...")
-brain_stream = resolve_stream("name", "AURA_Power")
+brain_stream = resolve_byprop("name", "AURA_Power")
 
 brain_inlet = StreamInlet(brain_stream[0])
 brain_inlet.open_stream()

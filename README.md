@@ -1,4 +1,4 @@
-# VRehab EEG Rehabilitation System / Sistema de Rehabilitación EEG VRehab
+# VRehab EEG Rehabilitation System / Sistema de Rehabilitacion EEG VRehab
 
 ## Description / Descripción
 
@@ -45,12 +45,12 @@ pip install -r requirements.txt
 
 ## Usage / Uso
 
-Run the main script:
+Run the refactored dark UI app:
 
-Ejecuta el script principal:
+Ejecuta la aplicacion refactorizada con interfaz oscura:
 
 ```bash
-python VRehab_2.py
+python vrehab_gui_refactored.py
 ```
 
 ### Training Process / Proceso de Entrenamiento

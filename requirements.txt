@@ -25,3 +25,7 @@ goto-statement>=1.2
 # Data persistence
 # Persistencia de datos
 pickle-mixin>=1.0.2
+
+# GUI and plotting libraries
+# Bibliotecas de interfaz gráfica y gráficos
+matplotlib>=3.5.0
