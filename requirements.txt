@@ -1,0 +1,27 @@
+# Requirements for VRehab_2.py - EEG-based rehabilitation system
+# Dependencias para VRehab_2.py - Sistema de rehabilitación basado en EEG
+
+# Core data processing libraries
+# Bibliotecas principales de procesamiento de datos
+numpy>=1.21.0
+pandas>=1.3.0
+
+# Machine learning libraries
+# Bibliotecas de machine learning
+scikit-learn>=1.0.0
+
+# EEG data streaming (Lab Streaming Layer)
+# Streaming de datos EEG (Lab Streaming Layer)
+pylsl>=1.16.0
+
+# Serial communication with Arduino
+# Comunicación serial con Arduino
+pyserial>=3.5
+
+# Control flow library (goto functionality)
+# Biblioteca de control de flujo (funcionalidad goto)
+goto-statement>=1.2
+
+# Data persistence
+# Persistencia de datos
+pickle-mixin>=1.0.2
