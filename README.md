@@ -1,90 +1,231 @@
-# VRehab EEG Rehabilitation System / Sistema de Rehabilitacion EEG VRehab
+# VRehab - Mind-Controlled Robot System 🤖🧠
 
-## Description / Descripción
+A revolutionary brain-computer interface system that allows users to control a Dobot Magic robot using only their thoughts through EEG signals.
 
-This project implements an EEG-based rehabilitation system that uses machine learning to detect movement intentions from brain signals. The system connects to an EEG device via Lab Streaming Layer (LSL) and controls an Arduino for rehabilitation purposes.
+## 🌟 Features
 
-Este proyecto implementa un sistema de rehabilitación basado en EEG que utiliza machine learning para detectar intenciones de movimiento a partir de señales cerebrales. El sistema se conecta a un dispositivo EEG a través de Lab Streaming Layer (LSL) y controla un Arduino con fines de rehabilitación.
+- **🧠 EEG-Based Control**: Real-time brain signal processing using Lab Streaming Layer (LSL)
+- **🤖 Robot Control**: Direct control of Dobot Magic robot via serial communication
+- **🎯 Machine Learning**: Logistic Regression model for movement intention detection
+- **📊 Real-time Visualization**: Live EEG data monitoring and movement detection
+- **🛡️ Safety First**: Safe movement sequences with collision avoidance
+- **🎨 Modern GUI**: Dark-themed interface with intuitive controls
 
-## Requirements / Requisitos
+## 🚀 Quick Start
 
-### Hardware / Hardware
-- EEG device compatible with LSL (e.g., AURA_Power)
-- Arduino connected to COM3 port
-- Dispositivo EEG compatible con LSL (ej. AURA_Power)
-- Arduino conectado al puerto COM3
+### Prerequisites
 
-### Software Dependencies / Dependencias de Software
+- Python 3.8+
+- Dobot Magic robot
+- EEG device compatible with LSL
+- Windows/Linux/Mac
 
-Install the required Python packages using:
+### Installation
 
-Instala los paquetes de Python requeridos usando:
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/vrehab-mind-controlled-robot.git
+   cd vrehab-mind-controlled-robot
+   ```
 
-```bash
-pip install -r requirements.txt
-```
-
-## Setup Instructions / Instrucciones de Configuración
-
-1. **Install Python packages / Instalar paquetes de Python:**
+2. **Install dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-2. **Connect your EEG device / Conectar tu dispositivo EEG:**
-   - Ensure your EEG device is running and streaming data via LSL
-   - The code looks for a stream named "AURA_Power"
-   - Asegúrate de que tu dispositivo EEG esté funcionando y transmitiendo datos vía LSL
-   - El código busca un stream llamado "AURA_Power"
+3. **Connect your hardware**
+   - Connect Dobot Magic robot via USB/Serial
+   - Connect EEG device and start LSL stream
 
-3. **Connect Arduino / Conectar Arduino:**
-   - Connect Arduino to COM3 port (modify port in code if different)
-   - Set baudrate to 38400
-   - Conectar Arduino al puerto COM3 (modificar puerto en el código si es diferente)
-   - Configurar baudrate a 38400
+4. **Run the application**
+   ```bash
+   python vrehab_gui_refactored.py
+   ```
 
-## Usage / Uso
+## 🎮 Usage
 
-Run the refactored dark UI app:
+### Basic Workflow
 
-Ejecuta la aplicacion refactorizada con interfaz oscura:
+1. **Connect Hardware**
+   - Select COM port for Dobot robot
+   - Connect to EEG stream
+   - Verify both connections show "Connected" status
 
-```bash
-python vrehab_gui_refactored.py
+2. **Train the Model**
+   - Click "Start Training"
+   - Follow the training protocol
+   - Train for both "Move" and "Rest" states
+   - Save the trained model
+
+3. **Mind Control**
+   - Click "Start Control"
+   - Think about moving your hand
+   - Watch the robot respond to your thoughts!
+
+### Robot Controls
+
+- **🤖 Test Robot Movement**: Execute safe movement sequence manually
+- **🏠 Robot Home**: Return robot to safe home position
+- **🎯 Mind Control**: Automatic robot movement when EEG threshold is reached
+
+## 🔧 Hardware Setup
+
+### Dobot Magic Robot
+
+1. **Connection**
+   - Connect robot via USB cable
+   - Note the COM port (e.g., COM5)
+   - Ensure robot is powered and calibrated
+
+2. **Safety**
+   - Clear workspace around robot
+   - Ensure robot has adequate movement space
+   - Keep hands away during operation
+
+### EEG Device
+
+1. **LSL Stream**
+   - Start your EEG software
+   - Ensure LSL stream is active
+   - Stream should contain EEG channels
+
+2. **Electrode Placement**
+   - Follow standard EEG electrode placement
+   - Focus on motor cortex areas
+   - Ensure good signal quality
+
+## 📁 Project Structure
+
+```
+vrehab-mind-controlled-robot/
+├── vrehab_gui_refactored.py    # Main GUI application
+├── requirements.txt            # Python dependencies
+├── README.md                  # This file
+├── dobot/                     # Dobot SDK files
+│   └── dobot-python/
+└── examples/                  # Example scripts
 ```
 
-### Training Process / Proceso de Entrenamiento
+## 🧠 How It Works
 
-1. **Relax Training (30 seconds) / Entrenamiento de Relajación (30 segundos):**
-   - Stay relaxed and still
-   - Permanece relajado y quieto
+### EEG Signal Processing
 
-2. **Movement Intention Training (30 seconds) / Entrenamiento de Intención de Movimiento (30 segundos):**
-   - Think about moving or imagine movement
-   - Piensa en moverte o imagina movimiento
+1. **Data Acquisition**: Real-time EEG data via LSL
+2. **Feature Extraction**: Signal processing and feature calculation
+3. **Classification**: Machine learning model predicts movement intention
+4. **Robot Control**: Commands sent to Dobot robot based on predictions
 
-3. **AI Training / Entrenamiento de IA:**
-   - The system trains a logistic regression model
-   - El sistema entrena un modelo de regresión logística
+### Machine Learning Pipeline
 
-4. **Control Phase / Fase de Control:**
-   - The system monitors your brain signals in real-time
-   - When movement intention is detected, it sends commands to Arduino
-   - El sistema monitorea tus señales cerebrales en tiempo real
-   - Cuando se detecta intención de movimiento, envía comandos al Arduino
+1. **Training Phase**
+   - Collect EEG data during "Move" and "Rest" states
+   - Extract features from EEG signals
+   - Train Logistic Regression classifier
+   - Save model for real-time use
 
-## Important Notes / Notas Importantes
+2. **Control Phase**
+   - Real-time EEG data processing
+   - Feature extraction and normalization
+   - Movement intention prediction
+   - Robot movement execution
 
-- Make sure your EEG device is properly calibrated before running
-- The system requires a stable LSL stream connection
-- Arduino must be connected and responsive
-- Asegúrate de que tu dispositivo EEG esté calibrado correctamente antes de ejecutar
-- El sistema requiere una conexión estable de stream LSL
-- El Arduino debe estar conectado y responder
+## 🛡️ Safety Features
 
-## Troubleshooting / Solución de Problemas
+- **Safe Movement Sequences**: Pre-programmed safe robot movements
+- **Collision Avoidance**: Step-by-step movement with height checks
+- **Emergency Stop**: Manual stop controls
+- **Home Position**: Safe return to home position
+- **Error Handling**: Graceful error recovery
 
-- If LSL stream is not found, check that your EEG software is running
-- If Arduino communication fails, verify the COM port and baudrate
-- Si no se encuentra el stream LSL, verifica que tu software EEG esté ejecutándose
-- Si falla la comunicación con Arduino, verifica el puerto COM y baudrate
+## 🎯 Robot Movement Sequences
+
+### Test Movement
+- Forward → Right → Up → Back → Left → Down → Forward → Home
+- Small, safe increments (15mm movements)
+- Moderate height changes (10mm)
+- Returns to starting position
+
+### Mind Control Movement
+- Same safe sequence triggered by EEG threshold
+- Automatic execution when movement intention detected
+- Real-time progress logging
+
+## 🔧 Configuration
+
+### COM Port Settings
+- Default baudrate: 115200
+- Auto-detect available ports
+- Manual port selection
+
+### EEG Settings
+- Auto-detect LSL streams
+- Real-time signal monitoring
+- Threshold adjustment (100-2000)
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Robot Connection Failed**
+   - Check COM port selection
+   - Verify robot is powered on
+   - Try different USB cable
+
+2. **EEG Stream Not Found**
+   - Ensure EEG software is running
+   - Check LSL stream is active
+   - Verify electrode connections
+
+3. **Robot Movement Errors**
+   - Check workspace is clear
+   - Verify robot calibration
+   - Use "Robot Home" button to reset
+
+### Debug Mode
+
+Enable verbose logging in the GUI to see detailed information about:
+- EEG data processing
+- Robot communication
+- Movement execution
+- Error messages
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## 🙏 Acknowledgments
+
+- **Dobot Technology** for the Magic robot platform
+- **Lab Streaming Layer** for EEG data streaming
+- **scikit-learn** for machine learning capabilities
+- **pydobot** for robot control interface
+
+## 📞 Support
+
+For issues and questions:
+- Create an issue on GitHub
+- Check the troubleshooting section
+- Review the documentation
+
+## 🔮 Future Enhancements
+
+- [ ] Multiple robot support
+- [ ] Advanced movement patterns
+- [ ] Real-time EEG visualization
+- [ ] Mobile app interface
+- [ ] Cloud-based training data
+- [ ] Multi-user support
+
+---
+
+**⚠️ Safety Warning**: Always ensure the robot workspace is clear and keep hands away during operation. This system is for research and educational purposes.
+
+**🎉 Enjoy controlling robots with your mind!**

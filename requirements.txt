@@ -1,5 +1,5 @@
-# Requirements for VRehab_2.py - EEG-based rehabilitation system
-# Dependencias para VRehab_2.py - Sistema de rehabilitación basado en EEG
+# Requirements for VRehab - Mind-Controlled Robot System
+# Dependencias para VRehab - Sistema de Robot Controlado por la Mente
 
 # Core data processing libraries
 # Bibliotecas principales de procesamiento de datos
@@ -14,18 +14,18 @@ scikit-learn>=1.0.0
 # Streaming de datos EEG (Lab Streaming Layer)
 pylsl>=1.16.0
 
-# Serial communication with Arduino
-# Comunicación serial con Arduino
+# Robot control (Dobot Magic)
+# Control de robot (Dobot Magic)
+pydobot>=1.0.0
+
+# Serial communication
+# Comunicación serial
 pyserial>=3.5
 
-# Control flow library (goto functionality)
-# Biblioteca de control de flujo (funcionalidad goto)
-goto-statement>=1.2
+# GUI libraries
+# Bibliotecas de interfaz gráfica
+matplotlib>=3.5.0
 
 # Data persistence
 # Persistencia de datos
 pickle-mixin>=1.0.2
-
-# GUI and plotting libraries
-# Bibliotecas de interfaz gráfica y gráficos
-matplotlib>=3.5.0

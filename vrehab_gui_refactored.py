@@ -12,6 +12,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 import typing
+import pydobot
 
 
 class VRehabGUI:
@@ -27,7 +28,7 @@ class VRehabGUI:
 
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("VRehab - EEG Rehabilitation System")
+        self.root.title("VRehab - Mind-Controlled Robot")
         self.root.minsize(1200, 800)
 
         # Color system (spec)
@@ -48,7 +49,7 @@ class VRehabGUI:
         }
 
         # State
-        self.arduino = None
+        self.robot = None
         self.brain_inlet = None
         self.lr_model = None
         self.sc_x = None
@@ -71,7 +72,7 @@ class VRehabGUI:
 
         # Welcome logs
         self.log_message("App started")
-        self.log_message("Connect Arduino and EEG to begin")
+        self.log_message("Connect Robot and EEG to begin mind control")
 
     # =============== THEME AND FACTORIES ===============
     def set_dark_theme(self) -> None:
@@ -124,15 +125,15 @@ class VRehabGUI:
         right.grid(row=0, column=1, sticky="e")
         inner.columnconfigure(0, weight=1)
         inner.columnconfigure(1, weight=0)
-        title = tk.Label(left, text="VRehab — EEG Rehabilitation System", bg=self.colors["CARD_ALT"], fg=self.colors["TEXT"], font=("Segoe UI", 18, "bold"))
+        title = tk.Label(left, text="VRehab — Mind-Controlled Robot", bg=self.colors["CARD_ALT"], fg=self.colors["TEXT"], font=("Segoe UI", 18, "bold"))
         title.pack(anchor="w")
-        subtitle = tk.Label(left, text="Brain-computer interface training and control", bg=self.colors["CARD_ALT"], fg=self.colors["MUTED"], font=("Segoe UI", 10))
+        subtitle = tk.Label(left, text="Brain-computer interface for robot control", bg=self.colors["CARD_ALT"], fg=self.colors["MUTED"], font=("Segoe UI", 10))
         subtitle.pack(anchor="w", pady=(4, 0))
         # Header chips
         chips_frame = tk.Frame(right, bg=self.colors["CARD_ALT"]) 
         chips_frame.pack(anchor="e")
         eeg_chip = self.make_chip(chips_frame, text="EEG: Disconnected")
-        ar_chip = self.make_chip(chips_frame, text="Arduino: Disconnected")
+        ar_chip = self.make_chip(chips_frame, text="Robot: Disconnected")
         eeg_chip["frame"].pack(side="left", padx=(0, 8))
         ar_chip["frame"].pack(side="left")
         return {"frame": hdr, "eeg_chip": eeg_chip, "arduino_chip": ar_chip}
@@ -185,10 +186,10 @@ class VRehabGUI:
         side = sidebar_card["container"]
         side.grid_columnconfigure(0, weight=1)
 
-        # Arduino section
+        # Robot section
         ar_frame = tk.Frame(side, bg=self.colors["CARD"]) 
         ar_frame.grid(row=0, column=0, sticky="ew", pady=(8, 8))
-        tk.Label(ar_frame, text="Arduino", bg=self.colors["CARD"], fg=self.colors["TEXT"], font=("Segoe UI", 12, "bold")).grid(row=0, column=0, sticky="w")
+        tk.Label(ar_frame, text="Robot", bg=self.colors["CARD"], fg=self.colors["TEXT"], font=("Segoe UI", 12, "bold")).grid(row=0, column=0, sticky="w")
         grid = tk.Frame(ar_frame, bg=self.colors["CARD"]) 
         grid.grid(row=1, column=0, sticky="ew", pady=(8, 0))
         grid.grid_columnconfigure(1, weight=1)
@@ -197,12 +198,12 @@ class VRehabGUI:
         self.ui["com_combo"] = ttk.Combobox(grid, textvariable=self.com_var, width=18)
         self.ui["com_combo"].grid(row=0, column=1, sticky="ew")
         tk.Label(grid, text="Baud", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=1, column=0, sticky="w", padx=(0, 8), pady=(8, 0))
-        self.baudrate_var = tk.StringVar(value="38400")
+        self.baudrate_var = tk.StringVar(value="115200")
         self.ui["baud_combo"] = ttk.Combobox(grid, textvariable=self.baudrate_var, width=18, values=["9600", "19200", "38400", "57600", "115200"]) 
         self.ui["baud_combo"].grid(row=1, column=1, sticky="ew", pady=(8, 0))
         btns = tk.Frame(ar_frame, bg=self.colors["CARD"]) 
         btns.grid(row=2, column=0, sticky="w", pady=(12, 0))
-        self.ui["btn_connect_arduino"] = self.make_button_primary(btns, "Connect Arduino", self.toggle_arduino)
+        self.ui["btn_connect_arduino"] = self.make_button_primary(btns, "Connect Robot", self.toggle_robot)
         self.ui["btn_connect_arduino"].grid(row=0, column=0, padx=(0, 8))
         self.ui["btn_refresh_ports"] = self.make_button_ghost(btns, "Refresh", self.update_com_ports)
         self.ui["btn_refresh_ports"].grid(row=0, column=1)
@@ -226,7 +227,7 @@ class VRehabGUI:
         row2 = tk.Frame(stc, bg=self.colors["CARD"]) 
         row1.grid(row=0, column=0, sticky="w", pady=(8, 4))
         row2.grid(row=1, column=0, sticky="w", pady=(4, 8))
-        self.ui["chip_arduino"] = self.make_chip(row1, "Arduino: Disconnected")
+        self.ui["chip_arduino"] = self.make_chip(row1, "Robot: Disconnected")
         self.ui["chip_arduino"]["frame"].pack(side="left")
         self.ui["chip_eeg"] = self.make_chip(row2, "EEG: Disconnected")
         self.ui["chip_eeg"]["frame"].pack(side="left")
@@ -236,7 +237,7 @@ class VRehabGUI:
         tips_card["frame"].grid(row=3, column=0, sticky="ew", pady=(8, 8))
         tips = tips_card["container"]
         tk.Label(tips, text="- Start EEG software before connecting", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=0, column=0, sticky="w")
-        tk.Label(tips, text="- Choose correct COM port and baud", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=1, column=0, sticky="w", pady=(4, 0))
+        tk.Label(tips, text="- Choose correct COM port for robot", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=1, column=0, sticky="w", pady=(4, 0))
         tk.Label(tips, text="- Train: 30s relax, 30s imagine", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=2, column=0, sticky="w", pady=(4, 0))
 
         # System log sub-card
@@ -305,10 +306,18 @@ class VRehabGUI:
         self.ui["btn_start_control"].grid(row=0, column=0, padx=(0, 8))
         self.ui["btn_stop_control"] = self.make_button_ghost(ctrl_btns, "Stop", self.stop_control)
         self.ui["btn_stop_control"].grid(row=0, column=1)
+        
+        # Robot test button row
+        robot_btns = tk.Frame(ctrl, bg=self.colors["CARD"])  
+        robot_btns.grid(row=3, column=0, columnspan=2, sticky="w", pady=(8, 8))
+        self.ui["btn_test_robot"] = self.make_button_primary(robot_btns, "🤖 Test Robot Movement", self.test_robot_movement)
+        self.ui["btn_test_robot"].grid(row=0, column=0, padx=(0, 8))
+        self.ui["btn_robot_home"] = self.make_button_ghost(robot_btns, "🏠 Robot Home", self.robot_home)
+        self.ui["btn_robot_home"].grid(row=0, column=1)
 
         # Left: Movement Detection
         md_card = self.make_card(ctrl, title="Movement Detection")
-        md_card["frame"].grid(row=3, column=0, sticky="nsew", padx=(0, 8))
+        md_card["frame"].grid(row=4, column=0, sticky="nsew", padx=(0, 8))
         md = md_card["container"]
         # Start content at row=2 to avoid overlapping the card title/subtitle
         tk.Label(md, text="Counter", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=2, column=0, sticky="w")
@@ -326,7 +335,7 @@ class VRehabGUI:
 
         # Right: Action & Threshold
         at_card = self.make_card(ctrl, title="Action & Threshold")
-        at_card["frame"].grid(row=3, column=1, sticky="nsew", padx=(8, 0))
+        at_card["frame"].grid(row=4, column=1, sticky="nsew", padx=(8, 0))
         at = at_card["container"]
         # Start content at row=2 to avoid overlapping the card title/subtitle
         tk.Label(at, text="Threshold", bg=self.colors["CARD"], fg=self.colors["MUTED"], font=("Segoe UI", 10)).grid(row=2, column=0, sticky="w")
@@ -364,20 +373,20 @@ class VRehabGUI:
             self.ui["com_combo"].set(values[0])
 
     def check_connections(self) -> None:
-        # Arduino
-        ar_connected = bool(self.arduino and self.arduino.is_open)
+        # Robot
+        robot_connected = bool(self.robot)
         # EEG
         eeg_connected = bool(self.brain_inlet)
 
         # Sidebar chips
-        self.ui["chip_arduino"]["set_status"](ar_connected, f"Arduino: {'Connected' if ar_connected else 'Disconnected'}")
+        self.ui["chip_arduino"]["set_status"](robot_connected, f"Robot: {'Connected' if robot_connected else 'Disconnected'}")
         self.ui["chip_eeg"]["set_status"](eeg_connected, f"EEG: {'Connected' if eeg_connected else 'Disconnected'}")
         # Header chips
-        self.ui["hdr_arduino_chip"]["set_status"](ar_connected, f"Arduino: {'Connected' if ar_connected else 'Disconnected'}")
+        self.ui["hdr_arduino_chip"]["set_status"](robot_connected, f"Robot: {'Connected' if robot_connected else 'Disconnected'}")
         self.ui["hdr_eeg_chip"]["set_status"](eeg_connected, f"EEG: {'Connected' if eeg_connected else 'Disconnected'}")
 
         # Enable training only if both connected
-        if ar_connected and eeg_connected:
+        if robot_connected and eeg_connected:
             self.ui["btn_start_training"].configure(state="normal")
         else:
             self.ui["btn_start_training"].configure(state="disabled")
@@ -392,25 +401,134 @@ class VRehabGUI:
         self.root.after(1000, self.check_connections)
 
     # =============== PUBLIC METHODS (UNCHANGED NAMES) ===============
-    def toggle_arduino(self) -> None:
-        if not (self.arduino and self.arduino.is_open):
+    def toggle_robot(self) -> None:
+        if not self.robot:
             try:
                 port = self.ui["com_combo"].get()
-                baud = int(self.baudrate_var.get())
-                self.arduino = serial.Serial(port=port, baudrate=baud, timeout=0.1)
-                self.ui["btn_connect_arduino"].configure(text="Disconnect Arduino")
-                self.log_message(f"Arduino connected to {port} at {baud}")
+                self.robot = pydobot.Dobot(port=port, verbose=True)
+                self.ui["btn_connect_arduino"].configure(text="Disconnect Robot")
+                self.log_message(f"Robot connected to {port}")
             except Exception as e:
-                messagebox.showerror("Connection Error", f"Failed to connect to Arduino: {e}")
-                self.log_message(f"Arduino connection failed: {e}")
+                messagebox.showerror("Connection Error", f"Failed to connect to Robot: {e}")
+                self.log_message(f"Robot connection failed: {e}")
         else:
             try:
-                self.arduino.close()
-                self.arduino = None
-                self.ui["btn_connect_arduino"].configure(text="Connect Arduino")
-                self.log_message("Arduino disconnected")
+                self.robot.close()
+                self.robot = None
+                self.ui["btn_connect_arduino"].configure(text="Connect Robot")
+                self.log_message("Robot disconnected")
             except Exception as e:
-                self.log_message(f"Error disconnecting Arduino: {e}")
+                self.log_message(f"Error disconnecting Robot: {e}")
+
+    def execute_robot_movement(self) -> None:
+        """Ejecuta una secuencia de movimientos del robot para control mental"""
+        if not self.robot:
+            self.log_message("Robot not connected")
+            return
+        
+        try:
+            # Obtener posición actual
+            (x, y, z, r, j1, j2, j3, j4) = self.robot.pose()
+            self.log_message(f"Robot position: x:{x:.1f} y:{y:.1f} z:{z:.1f}")
+            
+            # Guardar posición inicial
+            start_x, start_y, start_z, start_r = x, y, z, r
+            
+            # Trayectoria SIMPLE y SEGURA
+            self.log_message("🎯 Starting safe movement sequence...")
+            
+            # Secuencia de movimientos seguros
+            movements = [
+                ("Moving forward", start_x, start_y + 15, start_z, start_r),
+                ("Moving right", start_x + 15, start_y + 15, start_z, start_r),
+                ("Moving up", start_x + 15, start_y + 15, start_z + 10, start_r),
+                ("Moving back", start_x, start_y + 15, start_z + 10, start_r),
+                ("Moving left", start_x - 15, start_y + 15, start_z + 10, start_r),
+                ("Moving down", start_x - 15, start_y + 15, start_z, start_r),
+                ("Moving forward again", start_x - 15, start_y, start_z, start_r),
+                ("Returning to start", start_x, start_y, start_z, start_r)
+            ]
+            
+            # Ejecutar movimientos uno por uno
+            for i, (description, new_x, new_y, new_z, new_r) in enumerate(movements):
+                progress = ((i + 1) / len(movements)) * 100
+                self.log_message(f"🔄 Movement {i+1}/{len(movements)} ({progress:.0f}%): {description}")
+                
+                # Usar move_to para movimientos seguros
+                self.robot.move_to(new_x, new_y, new_z, new_r, wait=True)
+                time.sleep(0.5)  # Pausa entre movimientos
+            
+            self.log_message("🎉 Movement sequence completed!")
+            
+        except Exception as e:
+            self.log_message(f"❌ Robot movement error: {e}")
+            # En caso de error, intentar regresar a posición segura
+            try:
+                self.log_message("🚨 Attempting to return to safe position...")
+                self.robot.move_to(start_x, start_y, start_z + 20, start_r, wait=True)
+            except:
+                self.log_message("❌ Could not return to safe position")
+
+    def test_robot_movement(self) -> None:
+        """Ejecuta la rutina del robot manualmente para pruebas"""
+        if not self.robot:
+            messagebox.showerror("Error", "Please connect Robot first")
+            return
+        
+        # Deshabilitar botón temporalmente
+        self.ui["btn_test_robot"].configure(state="disabled", text="🤖 Testing...")
+        
+        try:
+            # Ejecutar en hilo separado para no bloquear la UI
+            test_thread = threading.Thread(target=self.execute_robot_movement)
+            test_thread.daemon = True
+            test_thread.start()
+            
+            # Rehabilitar botón después de un tiempo
+            self.root.after(10000, lambda: self.ui["btn_test_robot"].configure(state="normal", text="🤖 Test Robot Movement"))
+            
+        except Exception as e:
+            self.log_message(f"❌ Test robot error: {e}")
+            self.ui["btn_test_robot"].configure(state="normal", text="🤖 Test Robot Movement")
+
+    def robot_home(self) -> None:
+        """Mueve el robot a posición home SEGURA"""
+        if not self.robot:
+            messagebox.showerror("Error", "Please connect Robot first")
+            return
+        
+        try:
+            self.log_message("🏠 Moving robot to safe home position...")
+            # Obtener posición actual
+            (x, y, z, r, j1, j2, j3, j4) = self.robot.pose()
+            self.log_message(f"Current position: x:{x:.1f} y:{y:.1f} z:{z:.1f}")
+            
+            # Movimiento SEGURO paso a paso
+            # 1. Primero subir para evitar choques
+            safe_z = max(z + 20, 80)  # Subir al menos 20mm o llegar a 80mm
+            self.log_message(f"🔼 Moving up to safe height: {safe_z:.1f}mm")
+            self.robot.move_to(x, y, safe_z, r, wait=True)
+            time.sleep(1)
+            
+            # 2. Luego mover horizontalmente (más seguro)
+            self.log_message("↔️ Moving to center horizontally...")
+            self.robot.move_to(0, 0, safe_z, r, wait=True)
+            time.sleep(1)
+            
+            # 3. Finalmente bajar a altura home
+            home_z = 60  # Altura home segura
+            self.log_message(f"🔽 Moving to home height: {home_z:.1f}mm")
+            self.robot.move_to(0, 0, home_z, 0, wait=True)
+            
+            self.log_message("✅ Robot safely at home position")
+        except Exception as e:
+            self.log_message(f"❌ Robot home error: {e}")
+            # En caso de error, intentar posición de emergencia
+            try:
+                self.log_message("🚨 Attempting emergency safe position...")
+                self.robot.move_to(0, 0, 100, 0, wait=True)  # Posición muy alta y segura
+            except:
+                self.log_message("❌ Emergency positioning also failed")
 
     def toggle_eeg(self) -> None:
         if not self.brain_inlet:
@@ -455,8 +573,8 @@ class VRehabGUI:
         if not self.brain_inlet:
             messagebox.showerror("Error", "Please connect to EEG stream first")
             return
-        if not (self.arduino and self.arduino.is_open):
-            messagebox.showerror("Error", "Please connect Arduino first")
+        if not self.robot:
+            messagebox.showerror("Error", "Please connect Robot first")
             return
         if self.is_training:
             return
@@ -575,14 +693,17 @@ class VRehabGUI:
                     self.root.after(0, lambda c=counter: self.ui["counter_value"].configure(text=str(c)))
                     # Threshold action
                     if counter >= int(self.threshold_var.get()):
-                        if self.arduino and self.arduino.is_open:
+                        if self.robot:
                             try:
-                                self.arduino.write(b"1")
-                                self.root.after(0, lambda: self.ui["chip_send"]["set_status"](True, "Send Arduino: '1'"))
+                                # Ejecutar movimientos del robot en un hilo separado
+                                robot_thread = threading.Thread(target=self.execute_robot_movement)
+                                robot_thread.daemon = True
+                                robot_thread.start()
+                                self.root.after(0, lambda: self.ui["chip_send"]["set_status"](True, "Robot movement started"))
                             except Exception as e:
-                                self.root.after(0, lambda: self.log_message(f"Serial write error: {e}"))
+                                self.root.after(0, lambda: self.log_message(f"Robot movement error: {e}"))
                         counter = 0
-                        self.root.after(0, lambda: self.log_message("Movement command sent"))
+                        self.root.after(0, lambda: self.log_message("Robot movement command sent"))
                         self.root.after(0, lambda: self.ui["chip_reset"]["set_status"](True, "Reset counter & log action"))
             except Exception as e:
                 self.root.after(0, lambda: self.log_message(f"Control error: {e}"))
