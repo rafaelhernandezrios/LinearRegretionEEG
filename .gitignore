@@ -44,7 +44,7 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Project specific
+# Project specific - Keep only essential files
 *.csv
 *.pkl
 *.model
@@ -77,3 +77,26 @@ screenshots/
 test_*.py
 *_test.py
 temp_*.py
+verify_essential_files.py
+
+# Old GUI files (keep only refactored version)
+VRehab_GUI.py
+VRehab_2.py
+
+# Setup and installation files
+setup.py
+install.bat
+install.sh
+check_system.py
+vrehab_config.yaml
+
+# Documentation files
+README_dobot.md
+ESSENTIAL_FILES.md
+
+# GitHub workflows
+.github/
+
+# Dobot SDK (if not needed for basic functionality)
+dobot/
+dobot-python/
