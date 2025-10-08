@@ -15,7 +15,7 @@ Control a Dobot Magic robot using your thoughts through EEG signals.
 
 3. **Run the application**
    ```bash
-   python vrehab_gui_refactored.py
+   python gui-controlrobotwitheeg.py
    ```
 
 ## 🎮 How to Use
@@ -36,6 +36,13 @@ Control a Dobot Magic robot using your thoughts through EEG signals.
 - Clear workspace around robot
 - Keep hands away during operation
 - Use "Robot Home" button to reset position
+
+## 📁 Files
+
+- **`gui-controlrobotwitheeg.py`** - Main GUI for robot control with EEG
+- **`eegwitharduino.py`** - Arduino EEG integration (legacy version)
+- **`requirements.txt`** - Python dependencies
+- **`README.md`** - This documentation
 
 ## 📋 Requirements
 
